@@ -21,4 +21,67 @@ def main():
     while True: # Main game loop.
         # This stores the secret number the player needs to guess.
         secretNum = getSecretNum()
-        
+        print('I have thought up a number.')
+        print('You have {} guesses to get it.'.format(MAX_GUSSES))
+
+        numGuesses = 1
+        while numGuesses <= MAX_GUSSES:
+            guess = ''
+            # Keep looping until they enter a valid guess:
+            while len(guess) != NUM_DIGITS or not guess.isdecimal():
+                print('Guess #{}:'.format(numGuesses)) 
+                guess = input('>')
+
+            clues = getClues(guess, secretNum)
+            print(clues)
+            numGuesses += 1
+
+            if guess == secretNum:
+              break # They're correct, to break out of this loop
+            if numGuesses > MAX_GUSSES:
+                print('You ran out of guesses.')
+                print('The answer was {}.'.format(secretNum))
+
+        # Ask player if they want to play again
+        print('Do you want to play again? (yes or no)')
+        if not input('>').lower().startswith('y'):
+            break
+    print('Thanks for playing!')
+
+def getSecretNum():
+    """Return a sting made up of NUM_DIGITS unique random digits."""
+    numbers = list('0123456789') # create a list of digits 0 to 9
+    random.shuffle(numbers) # shuffle them into random order.
+
+    # Get the first NUM_DIGITS digits in the list for the secrete number:
+    secretNum = ''
+    for i in range(NUM_DIGITS):
+        secretNum += str(numbers[i])
+    return secretNum
+
+def getClues(guess, secretNum):
+    """Returns a string with the pico, fermi, bagels clues for a guess and secret number pair."""
+    if guess == secretNum:
+        return 'You got it!'
+    
+    clues = []
+    
+    for i in range(len(guess)):
+        if guess[i] == secretNum[i]:
+            # A correct digit is in the correct place
+            clues.append('Fermi')
+        elif guess[i] in secretNum:
+            # A correct digit is in the incorrect place.
+            clues.append('Pico')
+    if len(clues) == 0:
+        return 'Bagels' # There are no correct digits at all.
+    else:
+        # sort the clues into alphabetical order so their original order
+        # doesn't give information away.
+        clues.sort()
+        # Make a single string from the list of string
+        return ' '.join(clues)
+
+# If the program is run (instead of imported), run game:
+if __name__=="__main__":
+    main()    
